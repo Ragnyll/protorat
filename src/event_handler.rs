@@ -1,6 +1,6 @@
-use std::time::Duration;
-use ratatui::crossterm::event::{self, Event, KeyCode};
 use crate::app_state::{AppState, AppStateUpdate, Direction};
+use ratatui::crossterm::event::{self, Event, KeyCode};
+use std::time::Duration;
 
 pub fn handle_event(_: &AppState) -> std::io::Result<Option<AppStateUpdate>> {
     if event::poll(Duration::from_millis(250))? {

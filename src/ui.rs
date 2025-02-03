@@ -1,11 +1,11 @@
 use crate::app_state::{AppState, Node};
-use std::sync::LazyLock;
 use ratatui::{
-    style::Style,
-    Frame,
     layout::{Constraint, Layout},
+    style::Style,
     widgets::Block,
+    Frame,
 };
+use std::sync::LazyLock;
 
 /// The style of the active node.
 static ACTIVE_NODE_STYLE: LazyLock<Style> =
