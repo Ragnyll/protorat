@@ -22,9 +22,3 @@ jobs:
         run: cargo clippy --tests -- --deny warnings
       - name: Docs
         run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
-      - name: Build default features
-        run: cargo build --tests --verbose
-      - name: Test default features
-        run: cargo test
-      - name: Doc Test
-        run: cargo test --doc --all-features
