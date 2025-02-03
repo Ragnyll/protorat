@@ -8,10 +8,8 @@ use ratatui::{
 };
 
 /// The style of the active node.
-static ACTIVE_NODE_STYLE: LazyLock<Style> = LazyLock::new(|| {
-    Style::default().fg(ratatui::style::Color::Yellow)
-});
-
+static ACTIVE_NODE_STYLE: LazyLock<Style> =
+    LazyLock::new(|| Style::default().fg(ratatui::style::Color::Yellow));
 
 /// Lays out how the widgets will render on the terminal.
 pub fn ui(frame: &mut Frame, app_state: &AppState) {
@@ -32,13 +30,12 @@ pub fn ui(frame: &mut Frame, app_state: &AppState) {
     match app_state.focused_node() {
         Node::Left => {
             block_left = block_left.border_style(*ACTIVE_NODE_STYLE);
-        },
+        }
         Node::Right => {
             block_right = block_right.border_style(*ACTIVE_NODE_STYLE);
-        },
+        }
     };
 
     frame.render_widget(&block_left, window_chunks[0]);
     frame.render_widget(&block_right, window_chunks[1]);
 }
-
