@@ -17,6 +17,7 @@ pub fn handle_key(key: event::KeyEvent) -> Option<AppStateUpdate> {
     if matches!(key.code, KeyCode::Char('q')) {
         return Some(AppStateUpdate::Quit);
     }
+    // I seperated this I soon need to have the concept of a "mode".
     match key.code {
         KeyCode::Char('h') => Some(AppStateUpdate::FocusWindow(Direction::Left)),
         KeyCode::Char('l') => Some(AppStateUpdate::FocusWindow(Direction::Right)),
