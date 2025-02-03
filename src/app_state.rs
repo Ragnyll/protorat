@@ -65,7 +65,9 @@ pub enum AppStateUpdate {
 /// A relative direciton
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Direction {
+    #[allow(unused)]
     Up,
+    #[allow(unused)]
     Down,
     Left,
     Right,
