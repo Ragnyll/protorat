@@ -1,15 +1,14 @@
-use crate::app_state::{AppState, Node};
+use crate::{
+    app_state::{AppState, FocusedNode},
+    widgets::proto_explorer::ProtoExplorer,
+    static_styles::FOCUSED_NODE_STYLE,
+};
 use ratatui::{
     layout::{Constraint, Layout},
-    style::Style,
     widgets::Block,
     Frame,
 };
-use std::sync::LazyLock;
 
-/// The style of the active node.
-static ACTIVE_NODE_STYLE: LazyLock<Style> =
-    LazyLock::new(|| Style::default().fg(ratatui::style::Color::Yellow));
 
 /// Lays out how the widgets will render on the terminal.
 pub fn ui(frame: &mut Frame, app_state: &AppState) {
@@ -28,11 +27,11 @@ pub fn ui(frame: &mut Frame, app_state: &AppState) {
         .border_type(ratatui::widgets::BorderType::Rounded);
 
     match app_state.focused_node() {
-        Node::Left => {
-            block_left = block_left.border_style(*ACTIVE_NODE_STYLE);
+        FocusedNode::ProtoExplorer => {
+            block_left = block_left.border_style(*FOCUSED_NODE_STYLE);
         }
-        Node::Right => {
-            block_right = block_right.border_style(*ACTIVE_NODE_STYLE);
+        FocusedNode::Right => {
+            block_right = block_right.border_style(*FOCUSED_NODE_STYLE);
         }
     };
 

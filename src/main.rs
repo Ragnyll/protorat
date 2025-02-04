@@ -4,6 +4,8 @@ mod app_state;
 use app_state::{AppState, RunningState};
 mod ui;
 use ui::ui;
+mod widgets;
+mod static_styles;
 
 fn main() -> color_eyre::Result<()> {
     let mut terminal = ratatui::init();

@@ -1,14 +1,14 @@
 /// The app's state
 #[derive(Clone, Debug, Default)]
 pub struct AppState {
-    focused_node: Node,
+    focused_node: FocusedNode,
     running_state: RunningState,
 }
 
 #[derive(Clone, Debug, Default)]
-pub enum Node {
+pub enum FocusedNode {
     #[default]
-    Left,
+    ProtoExplorer,
     Right,
 }
 
@@ -21,7 +21,7 @@ impl AppState {
         self.running_state = RunningState::Done;
     }
 
-    pub fn focused_node(&self) -> &Node {
+    pub fn focused_node(&self) -> &FocusedNode {
         &self.focused_node
     }
 
@@ -42,14 +42,14 @@ impl AppState {
 
 /// Finds the next node to traverse to given the direction. If the given direction cannot validly
 /// traverse to a different node then `None` is returned.
-fn find_next_node(current_node: &Node, direction: &Direction) -> Option<Node> {
+fn find_next_node(current_node: &FocusedNode, direction: &Direction) -> Option<FocusedNode> {
     match current_node {
-        Node::Left => match direction {
-            Direction::Right => Some(Node::Right),
+        FocusedNode::ProtoExplorer => match direction {
+            Direction::Right => Some(FocusedNode::Right),
             _ => None,
         },
-        Node::Right => match direction {
-            Direction::Left => Some(Node::Left),
+        FocusedNode::Right => match direction {
+            Direction::Left => Some(FocusedNode::ProtoExplorer),
             _ => None,
         },
     }
