@@ -9,7 +9,7 @@ pub struct AppState {
 pub enum FocusedNode {
     #[default]
     ProtoExplorer,
-    Right,
+    ProtoEditor,
 }
 
 impl AppState {
@@ -45,10 +45,10 @@ impl AppState {
 fn find_next_node(current_node: &FocusedNode, direction: &Direction) -> Option<FocusedNode> {
     match current_node {
         FocusedNode::ProtoExplorer => match direction {
-            Direction::Right => Some(FocusedNode::Right),
+            Direction::Right => Some(FocusedNode::ProtoEditor),
             _ => None,
         },
-        FocusedNode::Right => match direction {
+        FocusedNode::ProtoEditor => match direction {
             Direction::Left => Some(FocusedNode::ProtoExplorer),
             _ => None,
         },

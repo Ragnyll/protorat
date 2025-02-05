@@ -8,26 +8,26 @@ use ratatui::{
     buffer::Buffer,
 };
 
-pub struct ProtoExplorer {
+pub struct ProtoEditor {
     content: String,
 }
 
-impl Default for ProtoExplorer {
+impl Default for ProtoEditor {
     fn default() -> Self {
         Self {
-            content: String::from("Jake"),
+            content: String::from("Gallow"),
         }
     }
 }
 
-impl StatefulWidget for ProtoExplorer {
+impl StatefulWidget for ProtoEditor {
     type State = AppState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         let mut block = Block::bordered()
-            .title_top("Explorer")
+            .title_top("Editor")
             .border_type(ratatui::widgets::BorderType::Rounded);
-        if matches!(state.focused_node(), FocusedNode::ProtoExplorer) {
+        if matches!(state.focused_node(), FocusedNode::ProtoEditor) {
             block = block.style(*FOCUSED_NODE_STYLE);
         }
         block.render(area, buf)

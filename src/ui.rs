@@ -1,40 +1,36 @@
 use crate::{
-    app_state::{AppState, FocusedNode},
-    widgets::proto_explorer::ProtoExplorer,
-    static_styles::FOCUSED_NODE_STYLE,
+    app_state::AppState,
+    widgets::{proto_explorer::ProtoExplorer, proto_editor::ProtoEditor},
 };
 use ratatui::{
-    layout::{Constraint, Layout},
-    widgets::Block,
+    layout::{Constraint, Layout, Direction},
+    widgets::Paragraph,
+    text::Span,
     Frame,
 };
-
 
 /// Lays out how the widgets will render on the terminal.
 pub fn ui(frame: &mut Frame, app_state: &AppState) {
     let area = frame.area();
 
-    let window_chunks = Layout::default()
-        .direction(ratatui::layout::Direction::Horizontal)
+    let rows = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Min(1),
+            Constraint::Length(1),
+        ]).split(frame.area());
+
+    let row_0_columns = Layout::default()
+        .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(30), Constraint::Percentage(70)])
-        .split(area);
+        .split(rows[0]);
+    let row_1_columns = rows[1];
 
-    let mut block_left = Block::bordered()
-        .title_top("Left")
-        .border_type(ratatui::widgets::BorderType::Rounded);
-    let mut block_right = Block::bordered()
-        .title_top("Right")
-        .border_type(ratatui::widgets::BorderType::Rounded);
+    let proto_explorer = ProtoExplorer::default();
+    let proto_editor = ProtoEditor::default();
+    let controls = Paragraph::new("Controls");
 
-    match app_state.focused_node() {
-        FocusedNode::ProtoExplorer => {
-            block_left = block_left.border_style(*FOCUSED_NODE_STYLE);
-        }
-        FocusedNode::Right => {
-            block_right = block_right.border_style(*FOCUSED_NODE_STYLE);
-        }
-    };
-
-    frame.render_widget(&block_left, window_chunks[0]);
-    frame.render_widget(&block_right, window_chunks[1]);
+    frame.render_stateful_widget(proto_explorer, row_0_columns[0], &mut app_state.clone());
+    frame.render_stateful_widget(proto_editor, row_0_columns[1], &mut app_state.clone());
+    frame.render_widget(controls, row_1_columns)
 }
