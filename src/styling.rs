@@ -4,6 +4,9 @@
 use ratatui::style::Style;
 use std::sync::LazyLock;
 
-/// The style of the active node.
-pub static FOCUSED_NODE_STYLE: LazyLock<Style> =
+/// The style of focused node in normal mode.
+pub static FOCUSED_NORMAL_MODE_NODE_STYLE: LazyLock<Style> =
     LazyLock::new(|| Style::default().fg(ratatui::style::Color::Yellow));
+
+pub static FOCUSED_INSERT_MODE_NODE_STYLE: LazyLock<Style> =
+    LazyLock::new(|| Style::default().fg(ratatui::style::Color::LightGreen));

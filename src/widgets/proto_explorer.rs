@@ -1,6 +1,6 @@
 use crate::{
-    app_state::{AppState, FocusedNode},
-    styling::FOCUSED_NODE_STYLE,
+    app_state::{AppState, FocusedNode, Mode},
+    styling::*,
 };
 use ratatui::{
     widgets::{StatefulWidget, Block, Widget},
@@ -28,7 +28,10 @@ impl StatefulWidget for ProtoExplorer {
             .title_top("Explorer")
             .border_type(ratatui::widgets::BorderType::Rounded);
         if matches!(state.focused_node(), FocusedNode::ProtoExplorer) {
-            block = block.style(*FOCUSED_NODE_STYLE);
+            block = block.style(*FOCUSED_NORMAL_MODE_NODE_STYLE);
+            if matches!(state.mode(), Mode::Insert) {
+                block = block.style(*FOCUSED_INSERT_MODE_NODE_STYLE);
+            }
         }
         block.render(area, buf)
     }
