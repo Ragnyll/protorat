@@ -15,10 +15,8 @@ pub fn ui(frame: &mut Frame, app_state: &AppState) {
 
     let rows = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Min(1),
-            Constraint::Length(1),
-        ]).split(frame.area());
+        .constraints([Constraint::Min(1), Constraint::Length(1)])
+        .split(frame.area());
 
     let row_0_columns = Layout::default()
         .direction(Direction::Horizontal)

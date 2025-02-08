@@ -47,12 +47,12 @@ impl AppState {
         match msg {
             AppStateUpdate::Quit => {
                 self.quit();
-            },
+            }
             AppStateUpdate::FocusBlock(direction) => {
                 if let Some(node) = find_next_node(&self.focused_node, &direction) {
                     self.focused_node = node;
                 }
-            },
+            }
             AppStateUpdate::ChangeMode(next_mode) => {
                 self.mode = next_mode;
             }
