@@ -1,7 +1,7 @@
 [package]
 name = "protorat"
 version = "0.1.0"
-authors = ["ragnyll <ragnyll@gallowzhumour.dev>"]
+authors = ["Jake Gallow <justanotherjakeyg@gmail.com>"]
 license = "MIT"
 edition = "2021"
 
