@@ -1,10 +1,11 @@
 use crate::{
     app_state::AppState,
-    widgets::{proto_explorer::ProtoExplorer, proto_editor::ProtoEditor},
+    widgets::{
+        proto_explorer::ProtoExplorer, proto_editor::ProtoEditor, control_hints::ControlHints,
+    },
 };
 use ratatui::{
     layout::{Constraint, Layout, Direction},
-    widgets::Paragraph,
     Frame,
 };
 
@@ -23,9 +24,9 @@ pub fn ui(frame: &mut Frame, app_state: &AppState) {
 
     let proto_explorer = ProtoExplorer::default();
     let proto_editor = ProtoEditor::default();
-    let controls = Paragraph::new("Controls");
+    let control_hints = ControlHints::new(app_state.mode().to_owned());
 
     frame.render_stateful_widget(proto_explorer, row_0_columns[0], &mut app_state.clone());
     frame.render_stateful_widget(proto_editor, row_0_columns[1], &mut app_state.clone());
-    frame.render_widget(controls, row_1_columns)
+    frame.render_widget(control_hints, row_1_columns)
 }
