@@ -1,10 +1,14 @@
 use crate::app_state::Mode;
 use ratatui::{
-    widgets::{StatefulWidget, Widget, Paragraph},
+    widgets::{Widget, Paragraph},
     layout::Rect,
     buffer::Buffer,
 };
-use std::collections::HashMap;
+
+/// The hints for controls that can be used in `Mode::Normal`
+const NORMAL_MODE_CONTROL_HINTS: &str =
+    "Controls: h: Move Left, l: Move Right, i: Enter Node, Q: Quit";
+const INSERT_MODE_CONTROL_HINTS: &str = "Controls: <Esc>: NormalMode, Q: Quit";
 
 /// A Widget providing the user with hints for some controls they have access to in the current
 /// mode.
@@ -28,33 +32,7 @@ impl Widget for ControlHints {
 
 fn get_control_hints_for_mode(mode: &Mode) -> Paragraph<'static> {
     match mode {
-        Mode::Normal => get_normal_mode_control_hints(),
-        Mode::Insert => get_insert_mode_control_hints(),
+        Mode::Normal => Paragraph::new(NORMAL_MODE_CONTROL_HINTS),
+        Mode::Insert => Paragraph::new(INSERT_MODE_CONTROL_HINTS),
     }
-}
-
-fn get_normal_mode_control_hints() -> Paragraph<'static> {
-    let mut controls = HashMap::new();
-    controls.insert("h", String::from("Move Left"));
-    controls.insert("l", String::from("Move Right"));
-    controls.insert("i", String::from("Enter Node"));
-    controls.insert("Q", String::from("Quit"));
-    let controls = collect_to_control_string(controls);
-    Paragraph::new(format!("Controls: {controls}"))
-}
-
-fn get_insert_mode_control_hints() -> Paragraph<'static> {
-    let mut controls = HashMap::new();
-    controls.insert("<Esc>", String::from("Normal Mode"));
-    controls.insert("Q", String::from("Quit"));
-    let controls = collect_to_control_string(controls);
-    Paragraph::new(format!("Controls: {controls}"))
-}
-
-fn collect_to_control_string(controls: HashMap<&str, String>) -> String {
-    controls
-        .into_iter()
-        .map(|(k, v)| format!("{}: {}", k, v))
-        .collect::<Vec<String>>()
-        .join(", ")
 }
