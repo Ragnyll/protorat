@@ -8,17 +8,8 @@ use ratatui::{
     buffer::Buffer,
 };
 
-pub struct ProtoExplorer {
-    content: String,
-}
-
-impl Default for ProtoExplorer {
-    fn default() -> Self {
-        Self {
-            content: String::from("Jake"),
-        }
-    }
-}
+#[derive(Default)]
+pub struct ProtoExplorer {}
 
 impl StatefulWidget for ProtoExplorer {
     type State = AppState;

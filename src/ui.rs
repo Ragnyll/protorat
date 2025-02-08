@@ -5,14 +5,11 @@ use crate::{
 use ratatui::{
     layout::{Constraint, Layout, Direction},
     widgets::Paragraph,
-    text::Span,
     Frame,
 };
 
 /// Lays out how the widgets will render on the terminal.
 pub fn ui(frame: &mut Frame, app_state: &AppState) {
-    let area = frame.area();
-
     let rows = Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Min(1), Constraint::Length(1)])

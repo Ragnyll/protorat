@@ -8,17 +8,8 @@ use ratatui::{
     buffer::Buffer,
 };
 
-pub struct ProtoEditor {
-    content: String,
-}
-
-impl Default for ProtoEditor {
-    fn default() -> Self {
-        Self {
-            content: String::from("Gallow"),
-        }
-    }
-}
+#[derive(Default)]
+pub struct ProtoEditor {}
 
 impl StatefulWidget for ProtoEditor {
     type State = AppState;
