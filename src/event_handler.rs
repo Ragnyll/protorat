@@ -1,4 +1,4 @@
-use crate::app_state::{AppState, AppStateUpdate, Direction, Mode};
+use crate::app_state::{AppState, AppStateUpdate, Direction, UserMode};
 use ratatui::crossterm::event::{self, Event, KeyCode, KeyEvent};
 use std::time::Duration;
 
@@ -11,8 +11,8 @@ pub fn handle_event(app_state: &AppState) -> std::io::Result<Option<AppStateUpda
             }
             // handle everything else by the mode.
             match app_state.mode() {
-                Mode::Normal => return Ok(handle_normal_mode_key_event(&key)),
-                Mode::Insert => return Ok(handle_insert_mode_key_event(&key)),
+                UserMode::Normal => return Ok(handle_normal_mode_key_event(&key)),
+                UserMode::Insert => return Ok(handle_insert_mode_key_event(&key)),
             }
         }
     }
@@ -22,16 +22,16 @@ pub fn handle_event(app_state: &AppState) -> std::io::Result<Option<AppStateUpda
 /// Handles key events receieved in normal `Mode::Normal`.
 fn handle_normal_mode_key_event(key: &KeyEvent) -> Option<AppStateUpdate> {
     match key.code {
-        KeyCode::Char('h') => Some(AppStateUpdate::FocusBlock(Direction::Left)),
-        KeyCode::Char('l') => Some(AppStateUpdate::FocusBlock(Direction::Right)),
-        KeyCode::Char('i') => Some(AppStateUpdate::ChangeMode(Mode::Insert)),
+        KeyCode::Char('h') => Some(AppStateUpdate::FocusNode(Direction::Left)),
+        KeyCode::Char('l') => Some(AppStateUpdate::FocusNode(Direction::Right)),
+        KeyCode::Char('i') => Some(AppStateUpdate::ChangeMode(UserMode::Insert)),
         _ => None,
     }
 }
 
 fn handle_insert_mode_key_event(key: &KeyEvent) -> Option<AppStateUpdate> {
     match key.code {
-        KeyCode::Esc => Some(AppStateUpdate::ChangeMode(Mode::Normal)),
+        KeyCode::Esc => Some(AppStateUpdate::ChangeMode(UserMode::Normal)),
         _ => None,
     }
 }
