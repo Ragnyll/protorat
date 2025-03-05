@@ -1,25 +1,20 @@
 use ratatui::{
-    widgets::{Widget, Paragraph},
+    widgets::{StatefulWidget, Widget, Paragraph},
     layout::Rect,
     buffer::Buffer,
 };
-
-/// The hints for controls that can be used in `Mode::Normal`
-const NORMAL_MODE_CONTROL_HINTS: &str =
-    "Controls: h: Move Left, l: Move Right, i: Enter Node, Q: Quit";
-const INSERT_MODE_CONTROL_HINTS: &str = "Controls: <Esc>: NormalMode, Q: Quit";
+use crate::app_state::control_hint_state::ControlHintState;
 
 /// A Widget providing the user with hints for some controls they have access to in the current
 /// node.
+#[derive(Default)]
 pub struct ControlHints {}
 
-impl Widget for ControlHints {
-    fn render(self, area: Rect, buf: &mut Buffer) {
-        let controls = get_control_hints_for_mode();
+impl StatefulWidget for ControlHints {
+    type State = ControlHintState;
+
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+        let controls = Paragraph::new(state.get_hint());
         controls.render(area, buf);
     }
-}
-
-fn get_control_hints_for_mode() -> Paragraph<'static> {
-        Paragraph::new(NORMAL_MODE_CONTROL_HINTS)
 }

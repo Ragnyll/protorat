@@ -51,3 +51,4 @@ impl StatefulWidget for ProtoExplorer {
         block.render(area, buf)
     }
 }
+

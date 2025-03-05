@@ -1,31 +1,25 @@
 pub mod app_nodes;
 pub mod proto_editor_state;
 pub mod proto_explorer_state;
+pub mod control_hint_state;
 
 use ratatui::crossterm::event::KeyEvent;
 use std::fmt::Debug;
 use app_nodes::AppNodes;
+use control_hint_state::ControlHintState;
 
-/// The app's state
-#[derive(Debug)]
+/// The app's state.
+#[derive(Debug, Default)]
 pub struct AppState {
     pub running_state: RunningState,
     pub app_node_states: AppNodes,
+    pub hint_state: ControlHintState
 }
 
 /// Handle events forwarded by the base event handler.
 pub trait NodeEventHandler {
     /// The given node handles key events sent to it.
     fn handle_key_event(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate>;
-}
-
-impl Default for AppState {
-    fn default() -> Self {
-        Self {
-            running_state: RunningState::default(),
-            app_node_states: AppNodes::default(),
-        }
-    }
 }
 
 /// The names of the nodes in the application.
@@ -57,6 +51,10 @@ impl AppState {
         self.running_state = RunningState::Done;
     }
 
+    pub fn get_control_hints_state(&mut self) -> &mut ControlHintState {
+        &mut self.hint_state
+    }
+
     pub fn update(&mut self, msg: AppStateUpdate) -> Option<AppStateUpdate> {
         match msg {
             AppStateUpdate::Quit => {
@@ -69,6 +67,11 @@ impl AppState {
                 None
             }
         }
+
+    }
+
+    fn update_hint_state (&mut self) {
+
     }
 
     fn handle_key_event_by_node(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate> {

@@ -1,5 +1,9 @@
-use crate::app_state::{NodeEventHandler, AppStateUpdate, NodeInteractiveState, AppNodeNames};
+use crate::app_state::{NodeEventHandler, AppStateUpdate, NodeInteractiveState, AppNodeNames, control_hint_state::Hint};
 use crossterm::event::{KeyEvent, KeyCode};
+
+const FOCUSED_CONTROL_HINTS: &str =
+    "Controls: h: Move Left, l: Move Right, i: Enter Node, Q: Quit";
+const INTERACTIVE_CONTROL_HINTS: &str = "Controls: <Esc>: NormalMode, Q: Quit";
 
 /// The state of the ProtoEditor.
 #[derive(Clone, Debug)]
@@ -53,6 +57,16 @@ impl ProtoEditorState {
                 None
             }
             _ => None,
+        }
+    }
+}
+
+impl Hint for ProtoEditorState {
+    fn get_hint(&self) -> String {
+        match self.node_interactive_state {
+            NodeInteractiveState::Idle => unreachable!("It should be impossile to get hints for an idle node"),
+            NodeInteractiveState::Focused => String::from(FOCUSED_CONTROL_HINTS),
+            NodeInteractiveState::Interactive => String::from(INTERACTIVE_CONTROL_HINTS),
         }
     }
 }

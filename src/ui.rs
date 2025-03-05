@@ -24,8 +24,7 @@ pub fn ui(frame: &mut Frame, app_state: &mut AppState) {
 
     let proto_explorer = ProtoExplorer::default();
     let proto_editor = ProtoEditor::default();
-    // TODO: update this with the hints for current node
-    let control_hints = ControlHints {};
+    let control_hints = ControlHints::default();
 
     frame.render_stateful_widget(
         proto_explorer,
@@ -37,5 +36,9 @@ pub fn ui(frame: &mut Frame, app_state: &mut AppState) {
         row_0_columns[1],
         app_state.app_node_states.get_proto_editor_state(),
     );
-    frame.render_widget(control_hints, row_1_columns)
+    frame.render_stateful_widget(
+        control_hints,
+        row_1_columns,
+        app_state.get_control_hints_state(),
+    )
 }

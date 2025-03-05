@@ -40,18 +40,4 @@ impl AppNodes {
         }
         None
     }
-
-    /// Update the given focused node, make all other nodes idle.
-    pub fn update_focused_node(&mut self, new_focused_node: &AppNodeNames) {
-        match new_focused_node {
-            AppNodeNames::ProtoEditor => {
-                self.proto_editor.node_interactive_state = NodeInteractiveState::Focused;
-                self.proto_explorer.node_interactive_state = NodeInteractiveState::Idle;
-            }
-            AppNodeNames::ProtoExplorer => {
-                self.proto_explorer.node_interactive_state = NodeInteractiveState::Focused;
-                self.proto_editor.node_interactive_state = NodeInteractiveState::Idle;
-            }
-        }
-    }
 }
