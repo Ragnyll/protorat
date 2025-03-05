@@ -11,7 +11,6 @@ use ratatui::{
 #[derive(Default)]
 pub struct ProtoExplorer {}
 
-
 impl StatefulWidget for ProtoExplorer {
     type State = ProtoExplorerState;
 
@@ -51,4 +50,3 @@ impl StatefulWidget for ProtoExplorer {
         block.render(area, buf)
     }
 }
-

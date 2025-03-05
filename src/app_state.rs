@@ -1,7 +1,7 @@
 pub mod app_nodes;
+pub mod control_hint_state;
 pub mod proto_editor_state;
 pub mod proto_explorer_state;
-pub mod control_hint_state;
 
 use ratatui::crossterm::event::KeyEvent;
 use std::fmt::Debug;
@@ -13,7 +13,7 @@ use control_hint_state::ControlHintState;
 pub struct AppState {
     pub running_state: RunningState,
     pub app_node_states: AppNodes,
-    pub hint_state: ControlHintState
+    pub hint_state: ControlHintState,
 }
 
 /// Handle events forwarded by the base event handler.
@@ -67,12 +67,9 @@ impl AppState {
                 None
             }
         }
-
     }
 
-    fn update_hint_state (&mut self) {
-
-    }
+    fn update_hint_state(&mut self) {}
 
     fn handle_key_event_by_node(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate> {
         let active_node = self.app_node_states.get_active_node_name().expect(

@@ -1,5 +1,4 @@
-const DEFAULT_CONTROL_HINTS: &str =
-    "Controls: h: Move Left, l: Move Right, i: Enter Node, Q: Quit";
+const DEFAULT_CONTROL_HINTS: &str = "Controls: h: Move Left, l: Move Right, i: Enter Node, Q: Quit";
 
 /// Other nodes can supply `Hint`s for what the user's controls are at a given time.
 pub trait Hint {
@@ -9,13 +8,13 @@ pub trait Hint {
 /// The state of the ControlHint Widget
 #[derive(Debug)]
 pub struct ControlHintState {
-    hint: String
+    hint: String,
 }
 
 impl Default for ControlHintState {
     fn default() -> Self {
         Self {
-            hint: String::from(DEFAULT_CONTROL_HINTS)
+            hint: String::from(DEFAULT_CONTROL_HINTS),
         }
     }
 }

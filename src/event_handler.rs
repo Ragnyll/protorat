@@ -10,7 +10,7 @@ pub fn handle_event() -> std::io::Result<Option<AppStateUpdate>> {
                 return Ok(Some(AppStateUpdate::Quit));
             }
             // Let the other individual app_state handlers handle
-            return Ok(Some(AppStateUpdate::SendKey(key)))
+            return Ok(Some(AppStateUpdate::SendKey(key)));
         }
     }
     Ok(None)
