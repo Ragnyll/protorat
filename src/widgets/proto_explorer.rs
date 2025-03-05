@@ -1,17 +1,16 @@
 use crate::{
-    app_state::{AppState, FocusedNode, UserMode, ProtoExplorerState, NodeInteractiveState},
+    app_state::{proto_explorer_state::ProtoExplorerState, NodeInteractiveState},
     styling::*,
 };
 use ratatui::{
-    widgets::{StatefulWidget, Block, Scrollbar, ScrollbarOrientation, Widget},
-    style::{Color, Modifier, Style},
+    widgets::{StatefulWidget, Block, Widget},
     layout::Rect,
     buffer::Buffer,
 };
-use tui_tree_widget::{TreeItem, Tree, TreeState};
 
 #[derive(Default)]
 pub struct ProtoExplorer {}
+
 
 impl StatefulWidget for ProtoExplorer {
     type State = ProtoExplorerState;

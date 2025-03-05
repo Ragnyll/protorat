@@ -1,4 +1,3 @@
-use crate::app_state::UserMode;
 use ratatui::{
     widgets::{Widget, Paragraph},
     layout::Rect,
@@ -11,28 +10,16 @@ const NORMAL_MODE_CONTROL_HINTS: &str =
 const INSERT_MODE_CONTROL_HINTS: &str = "Controls: <Esc>: NormalMode, Q: Quit";
 
 /// A Widget providing the user with hints for some controls they have access to in the current
-/// mode.
-pub struct ControlHints {
-    current_mode: UserMode,
-}
-
-impl ControlHints {
-    /// Creates a new instance of `ControlHints`.
-    pub fn new(current_mode: UserMode) -> Self {
-        Self { current_mode }
-    }
-}
+/// node.
+pub struct ControlHints {}
 
 impl Widget for ControlHints {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let controls = get_control_hints_for_mode(&self.current_mode);
+        let controls = get_control_hints_for_mode();
         controls.render(area, buf);
     }
 }
 
-fn get_control_hints_for_mode(mode: &UserMode) -> Paragraph<'static> {
-    match mode {
-        UserMode::Normal => Paragraph::new(NORMAL_MODE_CONTROL_HINTS),
-        UserMode::Insert => Paragraph::new(INSERT_MODE_CONTROL_HINTS),
-    }
+fn get_control_hints_for_mode() -> Paragraph<'static> {
+        Paragraph::new(NORMAL_MODE_CONTROL_HINTS)
 }

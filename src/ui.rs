@@ -24,17 +24,18 @@ pub fn ui(frame: &mut Frame, app_state: &mut AppState) {
 
     let proto_explorer = ProtoExplorer::default();
     let proto_editor = ProtoEditor::default();
-    let control_hints = ControlHints::new(app_state.mode().to_owned());
+    // TODO: update this with the hints for current node
+    let control_hints = ControlHints {};
 
     frame.render_stateful_widget(
         proto_explorer,
         row_0_columns[0],
-        &mut app_state.proto_explorer_state,
+        app_state.app_node_states.get_proto_explorer_state(),
     );
     frame.render_stateful_widget(
         proto_editor,
         row_0_columns[1],
-        &mut app_state.proto_editor_state,
+        app_state.app_node_states.get_proto_editor_state(),
     );
     frame.render_widget(control_hints, row_1_columns)
 }

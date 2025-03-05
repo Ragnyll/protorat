@@ -1,45 +1,39 @@
+pub mod app_nodes;
+pub mod proto_editor_state;
+pub mod proto_explorer_state;
+
+use ratatui::crossterm::event::KeyEvent;
+use std::fmt::Debug;
+use app_nodes::AppNodes;
+
 /// The app's state
 #[derive(Debug)]
 pub struct AppState {
-    pub mode: UserMode,
-    pub focused_node: FocusedNode,
     pub running_state: RunningState,
-    pub proto_editor_state: ProtoEditorState,
-    pub proto_explorer_state: ProtoExplorerState,
+    pub app_node_states: AppNodes,
+}
+
+/// Handle events forwarded by the base event handler.
+pub trait NodeEventHandler {
+    /// The given node handles key events sent to it.
+    fn handle_key_event(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate>;
 }
 
 impl Default for AppState {
     fn default() -> Self {
         Self {
-            mode: UserMode::default(),
-            focused_node: FocusedNode::default(),
             running_state: RunningState::default(),
-            proto_editor_state: ProtoEditorState::default(),
-            proto_explorer_state: ProtoExplorerState::default(),
+            app_node_states: AppNodes::default(),
         }
     }
 }
 
-///  The node that is currently focused on.
-///  You may ask "isnt that information also in the individul node's states?" and to that I say
-///  yes. But having this at the top level ui state is much easier than checking everything's state
-///  just for navigation. So fk off.
-#[derive(Default, Debug, Clone)]
-pub enum FocusedNode {
+/// The names of the nodes in the application.
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum AppNodeNames {
     #[default]
     ProtoExplorer,
     ProtoEditor,
-}
-
-/// The modes used to interact with different nodes within the application. These are roughly based
-/// off vim, so use a similar terminology.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub enum UserMode {
-    /// The normal mode used to navigate from node to node.
-    #[default]
-    Normal,
-    /// The mode to "insert" in the given block.
-    Insert,
 }
 
 /// The states a node can be in from the ui's perspective.
@@ -54,26 +48,6 @@ pub enum NodeInteractiveState {
     Interactive,
 }
 
-/// The state of the ProtoExplorer.
-#[derive(Clone, Debug)]
-pub struct ProtoExplorerState {
-    pub node_interactive_state: NodeInteractiveState,
-}
-
-impl Default for ProtoExplorerState {
-    fn default() -> Self {
-        Self {
-            node_interactive_state: NodeInteractiveState::Focused,
-        }
-    }
-}
-
-/// The state of the ProtoEditor.
-#[derive(Default, Clone, Debug)]
-pub struct ProtoEditorState {
-    pub node_interactive_state: NodeInteractiveState,
-}
-
 impl AppState {
     pub fn running_state(&self) -> &RunningState {
         &self.running_state
@@ -83,83 +57,47 @@ impl AppState {
         self.running_state = RunningState::Done;
     }
 
-    pub fn mode(&self) -> &UserMode {
-        &self.mode
-    }
-
     pub fn update(&mut self, msg: AppStateUpdate) -> Option<AppStateUpdate> {
         match msg {
             AppStateUpdate::Quit => {
                 self.quit();
+                None
             }
-            AppStateUpdate::FocusNode(direction) => {
-                if let Some(new_focused_node) = find_next_node(&self.focused_node, &direction) {
-                    self.focused_node = new_focused_node.clone();
-                    self.update_nodes_focus_states(new_focused_node);
-                }
-            }
-            AppStateUpdate::ChangeMode(next_mode) => {
-                self.mode = next_mode.clone();
-                self.update_nodes_mode_states(next_mode);
-            }
-        };
-        None
-    }
-
-    fn update_nodes_focus_states(&mut self, new_focused_node: FocusedNode) {
-        match new_focused_node {
-            FocusedNode::ProtoExplorer => {
-                self.proto_explorer_state.node_interactive_state = NodeInteractiveState::Focused;
-                self.proto_editor_state.node_interactive_state = NodeInteractiveState::Idle;
-            }
-            FocusedNode::ProtoEditor => {
-                self.proto_editor_state.node_interactive_state = NodeInteractiveState::Focused;
-                self.proto_explorer_state.node_interactive_state = NodeInteractiveState::Idle;
+            AppStateUpdate::SendKey(key_event) => self.handle_key_event_by_node(key_event),
+            AppStateUpdate::FocusNode(next_node_name) => {
+                self.update_node_focused_state(next_node_name);
+                None
             }
         }
     }
 
-    fn update_nodes_mode_states(&mut self, next_mode: UserMode) {
-        match self.focused_node {
-            FocusedNode::ProtoExplorer => match next_mode {
-                UserMode::Normal => {
-                    self.proto_explorer_state.node_interactive_state =
-                        NodeInteractiveState::Focused;
-                    self.proto_editor_state.node_interactive_state = NodeInteractiveState::Idle;
-                }
-                UserMode::Insert => {
-                    self.proto_explorer_state.node_interactive_state =
-                        NodeInteractiveState::Interactive;
-                    self.proto_editor_state.node_interactive_state = NodeInteractiveState::Idle;
-                }
-            },
-            FocusedNode::ProtoEditor => match next_mode {
-                UserMode::Normal => {
-                    self.proto_editor_state.node_interactive_state = NodeInteractiveState::Focused;
-                    self.proto_explorer_state.node_interactive_state = NodeInteractiveState::Idle;
-                }
-                UserMode::Insert => {
-                    self.proto_editor_state.node_interactive_state =
-                        NodeInteractiveState::Interactive;
-                    self.proto_explorer_state.node_interactive_state = NodeInteractiveState::Idle;
-                }
-            },
+    fn handle_key_event_by_node(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate> {
+        let active_node = self.app_node_states.get_active_node_name().expect(
+            "There should not be a route to handling key events while there is no focued node. Actually i guess this could happen if you input a bunch of events hand it in between update cycles somehow. that seems unlikely i think.",
+        );
+        match active_node {
+            AppNodeNames::ProtoExplorer => self
+                .app_node_states
+                .proto_explorer
+                .handle_key_event(key_event),
+            AppNodeNames::ProtoEditor => self
+                .app_node_states
+                .proto_editor
+                .handle_key_event(key_event),
         }
     }
-}
 
-/// Finds the next node to traverse to given the direction. If the given direction cannot validly
-/// traverse to a different node then `None` is returned.
-fn find_next_node(current_node: &FocusedNode, direction: &Direction) -> Option<FocusedNode> {
-    match current_node {
-        FocusedNode::ProtoExplorer => match direction {
-            Direction::Right => Some(FocusedNode::ProtoEditor),
-            _ => None,
-        },
-        FocusedNode::ProtoEditor => match direction {
-            Direction::Left => Some(FocusedNode::ProtoExplorer),
-            _ => None,
-        },
+    fn update_node_focused_state(&mut self, next_node: AppNodeNames) {
+        match next_node {
+            AppNodeNames::ProtoExplorer => {
+                self.app_node_states.proto_explorer.node_interactive_state =
+                    NodeInteractiveState::Focused
+            }
+            AppNodeNames::ProtoEditor => {
+                self.app_node_states.proto_editor.node_interactive_state =
+                    NodeInteractiveState::Focused;
+            }
+        }
     }
 }
 
@@ -167,22 +105,11 @@ fn find_next_node(current_node: &FocusedNode, direction: &Direction) -> Option<F
 #[derive(PartialEq, Debug, Clone)]
 pub enum AppStateUpdate {
     /// Update the state to focus on a different Node.
-    FocusNode(Direction),
-    /// Change the state of the app to the given mode.
-    ChangeMode(UserMode),
+    FocusNode(AppNodeNames),
+    ///  Send a key to a node to have it handled by the app state
+    SendKey(KeyEvent),
     /// Quit the app.
     Quit,
-}
-
-/// A relative direciton
-#[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Direction {
-    #[allow(unused)]
-    Up,
-    #[allow(unused)]
-    Down,
-    Left,
-    Right,
 }
 
 /// Whether the App is runnign or not.

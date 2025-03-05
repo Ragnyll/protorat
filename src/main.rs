@@ -13,7 +13,7 @@ fn main() -> color_eyre::Result<()> {
 
     while !matches!(app_state.running_state(), RunningState::Done) {
         terminal.draw(|frame| ui(frame, &mut app_state))?;
-        let mut current_msg = handle_event(&app_state)?;
+        let mut current_msg = handle_event()?;
         while current_msg.is_some() {
             current_msg = app_state.update(current_msg.unwrap());
         }

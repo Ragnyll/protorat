@@ -1,5 +1,5 @@
 use crate::{
-    app_state::{UserMode, ProtoEditorState, NodeInteractiveState},
+    app_state::{proto_editor_state::ProtoEditorState, NodeInteractiveState},
     styling::*,
 };
 use ratatui::{
