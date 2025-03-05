@@ -25,28 +25,7 @@ impl StatefulWidget for ProtoExplorer {
                 block = block.style(*FOCUSED_INSERT_MODE_NODE_STYLE)
             }
         };
-        //let items = &state.items;
-        //let widget = Tree::new(&items)
-        //.expect("all item identifiers are unique")
-        //.block(
-        //Block::bordered()
-        //.title("Tree Widget")
-        //.title_bottom(format!("{:?}", state.tree_state)),
-        //)
-        //.experimental_scrollbar(Some(
-        //Scrollbar::new(ScrollbarOrientation::VerticalRight)
-        //.begin_symbol(None)
-        //.track_symbol(None)
-        //.end_symbol(None),
-        //))
-        //.highlight_style(
-        //Style::new()
-        //.fg(Color::Black)
-        //.bg(Color::LightGreen)
-        //.add_modifier(Modifier::BOLD),
-        //)
-        //.highlight_symbol(">> ");
-        //widget.render(area, buf, &mut state.tree_state);
+
         block.render(area, buf)
     }
 }
