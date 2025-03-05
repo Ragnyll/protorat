@@ -1,3 +1,5 @@
+use crate::app_state::AppStateUpdate;
+
 const DEFAULT_CONTROL_HINTS: &str = "Controls: h: Move Left, l: Move Right, i: Enter Node, Q: Quit";
 
 /// Other nodes can supply `Hint`s for what the user's controls are at a given time.
@@ -22,5 +24,11 @@ impl Default for ControlHintState {
 impl ControlHintState {
     pub fn get_hint(&self) -> &str {
         &self.hint
+    }
+
+    /// Updates the active hint for the active node.
+    pub fn update_hint(&mut self, hint: String) -> Option<AppStateUpdate> {
+        self.hint = hint;
+        None
     }
 }

@@ -1,5 +1,6 @@
 use crate::app_state::{
     NodeEventHandler, AppStateUpdate, NodeInteractiveState, AppNodeNames, control_hint_state::Hint,
+    Focus,
 };
 use crossterm::event::{KeyEvent, KeyCode};
 
@@ -17,6 +18,13 @@ impl Default for ProtoEditorState {
         Self {
             node_interactive_state: NodeInteractiveState::Idle,
         }
+    }
+}
+
+impl Focus for ProtoEditorState {
+    fn focus(&mut self) -> Option<AppStateUpdate> {
+        self.node_interactive_state = NodeInteractiveState::Focused;
+        Some(AppStateUpdate::HintUpdate(self.get_hint()))
     }
 }
 
@@ -44,7 +52,7 @@ impl ProtoEditorState {
             }
             KeyCode::Char('i') => {
                 self.node_interactive_state = NodeInteractiveState::Interactive;
-                None
+                Some(AppStateUpdate::HintUpdate(self.get_hint()))
             }
             _ => None,
         }
@@ -55,7 +63,7 @@ impl ProtoEditorState {
         match key_event.code {
             KeyCode::Esc => {
                 self.node_interactive_state = NodeInteractiveState::Focused;
-                None
+                Some(AppStateUpdate::HintUpdate(self.get_hint()))
             }
             _ => None,
         }

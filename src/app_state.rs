@@ -62,6 +62,7 @@ impl AppState {
                 None
             }
             AppStateUpdate::SendKey(key_event) => self.handle_key_event_by_node(key_event),
+            AppStateUpdate::HintUpdate(hint) => self.hint_state.update_hint(hint),
             AppStateUpdate::FocusNode(next_node_name) => {
                 self.update_node_focused_state(next_node_name);
                 None
@@ -69,11 +70,9 @@ impl AppState {
         }
     }
 
-    fn update_hint_state(&mut self) {}
-
     fn handle_key_event_by_node(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate> {
         let active_node = self.app_node_states.get_active_node_name().expect(
-            "There should not be a route to handling key events while there is no focued node. Actually i guess this could happen if you input a bunch of events hand it in between update cycles somehow. that seems unlikely i think.",
+            "There should not be a route to handling key events while there is no focued node.",
         );
         match active_node {
             AppNodeNames::ProtoExplorer => self
@@ -90,15 +89,17 @@ impl AppState {
     fn update_node_focused_state(&mut self, next_node: AppNodeNames) {
         match next_node {
             AppNodeNames::ProtoExplorer => {
-                self.app_node_states.proto_explorer.node_interactive_state =
-                    NodeInteractiveState::Focused
+                self.app_node_states.proto_explorer.focus();
             }
             AppNodeNames::ProtoEditor => {
-                self.app_node_states.proto_editor.node_interactive_state =
-                    NodeInteractiveState::Focused;
+                self.app_node_states.proto_editor.focus();
             }
         }
     }
+}
+
+pub trait Focus {
+    fn focus(&mut self) -> Option<AppStateUpdate>;
 }
 
 /// The Commands used to change the AppState.
@@ -108,6 +109,8 @@ pub enum AppStateUpdate {
     FocusNode(AppNodeNames),
     ///  Send a key to a node to have it handled by the app state
     SendKey(KeyEvent),
+    /// A signal to update the hints on screen
+    HintUpdate(String),
     /// Quit the app.
     Quit,
 }
