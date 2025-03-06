@@ -1,15 +1,45 @@
-/// The app's state
-#[derive(Clone, Debug, Default)]
+pub mod app_nodes;
+pub mod control_hint_state;
+pub mod proto_editor_state;
+pub mod proto_explorer_state;
+
+use ratatui::crossterm::event::KeyEvent;
+use std::fmt::Debug;
+use app_nodes::AppNodes;
+use control_hint_state::ControlHintState;
+
+/// The app's state.
+#[derive(Debug, Default)]
 pub struct AppState {
-    focused_node: Node,
-    running_state: RunningState,
+    pub running_state: RunningState,
+    pub app_node_states: AppNodes,
+    pub hint_state: ControlHintState,
 }
 
-#[derive(Clone, Debug, Default)]
-pub enum Node {
+/// Handle events forwarded by the base event handler.
+pub trait NodeEventHandler {
+    /// The given node handles key events sent to it.
+    fn handle_key_event(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate>;
+}
+
+/// The names of the nodes in the application.
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum AppNodeNames {
     #[default]
-    Left,
-    Right,
+    ProtoExplorer,
+    ProtoEditor,
+}
+
+/// The states a node can be in from the ui's perspective.
+#[derive(Default, Clone, Debug)]
+pub enum NodeInteractiveState {
+    /// The user is not focused on this node.
+    #[default]
+    Idle,
+    /// The user is focused on this node.
+    Focused,
+    /// The user is interacting with this node.
+    Interactive,
 }
 
 impl AppState {
@@ -21,56 +51,68 @@ impl AppState {
         self.running_state = RunningState::Done;
     }
 
-    pub fn focused_node(&self) -> &Node {
-        &self.focused_node
+    pub fn get_control_hints_state(&mut self) -> &mut ControlHintState {
+        &mut self.hint_state
     }
 
     pub fn update(&mut self, msg: AppStateUpdate) -> Option<AppStateUpdate> {
         match msg {
             AppStateUpdate::Quit => {
                 self.quit();
+                None
             }
-            AppStateUpdate::FocusWindow(direction) => {
-                if let Some(node) = find_next_node(&self.focused_node, &direction) {
-                    self.focused_node = node;
-                }
+            AppStateUpdate::SendKey(key_event) => self.handle_key_event_by_node(key_event),
+            AppStateUpdate::HintUpdate(hint) => self.hint_state.update_hint(hint),
+            AppStateUpdate::FocusNode(next_node_name) => {
+                self.update_node_focused_state(next_node_name);
+                None
             }
-        };
-        None
+        }
+    }
+
+    fn handle_key_event_by_node(&mut self, key_event: KeyEvent) -> Option<AppStateUpdate> {
+        let active_node = self.app_node_states.get_active_node_name().expect(
+            "There should not be a route to handling key events while there is no focued node.",
+        );
+        match active_node {
+            AppNodeNames::ProtoExplorer => self
+                .app_node_states
+                .proto_explorer
+                .handle_key_event(key_event),
+            AppNodeNames::ProtoEditor => self
+                .app_node_states
+                .proto_editor
+                .handle_key_event(key_event),
+        }
+    }
+
+    fn update_node_focused_state(&mut self, next_node: AppNodeNames) {
+        match next_node {
+            AppNodeNames::ProtoExplorer => {
+                self.app_node_states.proto_explorer.focus();
+            }
+            AppNodeNames::ProtoEditor => {
+                self.app_node_states.proto_editor.focus();
+            }
+        }
     }
 }
 
-/// Finds the next node to traverse to given the direction. If the given direction cannot validly
-/// traverse to a different node then `None` is returned.
-fn find_next_node(current_node: &Node, direction: &Direction) -> Option<Node> {
-    match current_node {
-        Node::Left => match direction {
-            Direction::Right => Some(Node::Right),
-            _ => None,
-        },
-        Node::Right => match direction {
-            Direction::Left => Some(Node::Left),
-            _ => None,
-        },
-    }
+pub trait Focus {
+    fn focus(&mut self) -> Option<AppStateUpdate>;
 }
 
 /// The Commands used to change the AppState.
 #[derive(PartialEq, Debug, Clone)]
 pub enum AppStateUpdate {
-    FocusWindow(Direction),
+    /// Update the state to focus on a different Node.
+    FocusNode(AppNodeNames),
+    ///  Send a key to a node to have it handled by the app state
+    SendKey(KeyEvent),
+    /// A signal to update the hints on screen
+    HintUpdate(String),
+    /// Quit the app.
     Quit,
-}
-
-/// A relative direciton
-#[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Direction {
-    #[allow(unused)]
-    Up,
-    #[allow(unused)]
-    Down,
-    Left,
-    Right,
 }
 
 /// Whether the App is runnign or not.

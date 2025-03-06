@@ -1,13 +1,11 @@
 [package]
 name = "protorat"
 version = "0.1.0"
-authors = ["ragnyll <ragnyll@gallowzhumour.dev>"]
+authors = ["Jake Gallow <justanotherjakeyg@gmail.com>"]
 license = "MIT"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-crossterm = { version = "0.28.1", features = ["event-stream"] }
-futures = "0.3.31"
+crossterm = { version = "0.28.1" }
 ratatui = "0.29.0"
-tokio = { version = "1.43.0", features = ["full"] }
 color-eyre = "0.6.3"
