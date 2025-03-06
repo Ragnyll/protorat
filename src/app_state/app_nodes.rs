@@ -1,6 +1,6 @@
 use crate::app_state::{
-    proto_explorer_state::ProtoExplorerState, proto_editor_state::ProtoEditorState, AppNodeNames,
-    NodeInteractiveState,
+    AppNodeNames, NodeInteractiveState, proto_editor_state::ProtoEditorState,
+    proto_explorer_state::ProtoExplorerState,
 };
 /// A HashMap Like structure specifically for getting the individual widgets states.
 #[derive(Debug, Default)]
